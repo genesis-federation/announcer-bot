@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+   // "rootDir": ".",
+        "baseUrl": ".",
+        "paths": {
+            "@/*": ["src/*"]
+        },
+        
+        "target": "esnext",                          
+        "module": "commonjs",                  
+        "strict": true,                          
+        "esModuleInterop": true,                 
+        "forceConsistentCasingInFileNames": true,
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
+        "allowSyntheticDefaultImports": true,
+        "resolveJsonModule": true,
+    },
+
+    "lib": ["esnext"],
+    "include": [
+        "src/**/*.ts",
+        "tests/**/*.ts",
+    ],
+}
+  
