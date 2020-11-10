@@ -212,7 +212,7 @@ client.on('ready', () => {
     console.log('Client ready!');
     invoke();
     client.user?.setActivity({
-        name: 'Test',
-        url: 'https://google.com',
+        type: 'CUSTOM_STATUS',
+        name: config.botStatus,
     });
 });

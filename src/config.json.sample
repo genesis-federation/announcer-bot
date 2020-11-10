@@ -1,5 +1,6 @@
 {
     "token": "",
     "ownerId": "",
-    "commandChannelId": ""
+    "commandChannelId": "",
+    "botStatus": ""
 }
