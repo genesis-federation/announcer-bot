@@ -329,7 +329,7 @@ export const askRemarksFn: DiscordPromptFunction<AnnouncementInterface> = async 
 
     return {
         ...data,
-        staging: remarks.toLowerCase() === 'none' ? null : remarks,
+        remarks: remarks.toLowerCase() === 'none' ? null : remarks,
     };
 };
 export const askRemarksPrompt = new DiscordPrompt(

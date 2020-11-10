@@ -175,6 +175,13 @@ module.exports = class NewCommand extends Command {
                 });
             }
 
+            if (data.remarks) {
+                fields.push({
+                    name: 'Remarks',
+                    value: data.remarks,
+                });
+            }
+
             const embed = new MessageEmbed()
                 .setTitle(data.title)
                 .setDescription(data.description)
