@@ -7,6 +7,7 @@ export class Announcement implements AnnouncementInterface {
     authorId = '';
     fcName = '';
     title = '';
+    bannerUrl = '';
     when = moment();
     type: 'CTA' | 'HD' | 'OTHER' = 'OTHER';
     doctrine = '';
@@ -55,6 +56,7 @@ export class Announcement implements AnnouncementInterface {
             enablePingEveryone: this.enablePingEveryone,
             announced: this.announced,
             remarks: this.remarks,
+            bannerUrl: this.bannerUrl,
         });
     }
 

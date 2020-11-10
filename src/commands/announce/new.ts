@@ -19,6 +19,7 @@ import {
     askDescriptionPrompt,
     askPingEveryonePrompt,
     askRemarksPrompt,
+    askBannerUrlPrompt,
 } from '@/prompts/announcement';
 import { DiscordPromptRunner, Errors, PromptNode } from 'discord.js-prompts';
 import { AnnouncementInterface } from '@/types/type';
@@ -35,6 +36,7 @@ const askStaging = new PromptNode(askStagingPrompt);
 const askDate = new PromptNode(askDatePrompt);
 const askConfirm = new PromptNode(confirmPrompt);
 const askRemarks = new PromptNode(askRemarksPrompt);
+const askBannerUrl = new PromptNode(askBannerUrlPrompt);
 const askPingEveryone = new PromptNode(askPingEveryonePrompt);
 
 askTitle.addChild(askFc);
@@ -45,7 +47,8 @@ askType.addChild(askStaging);
 askStaging.addChild(askDate);
 askDate.addChild(askPingEveryone);
 askPingEveryone.addChild(askRemarks);
-askRemarks.addChild(askConfirm);
+askRemarks.addChild(askBannerUrl);
+askBannerUrl.addChild(askConfirm);
 
 module.exports = class NewCommand extends Command {
     constructor(client: CommandoClient) {
@@ -123,6 +126,7 @@ module.exports = class NewCommand extends Command {
                 type: 'CTA',
                 when: moment(),
                 remarks: '',
+                bannerUrl: '',
                 enablePingEveryone: false,
                 announced: {
                     actual: false,
@@ -187,6 +191,11 @@ module.exports = class NewCommand extends Command {
                 .setDescription(data.description)
                 .addFields(fields)
                 .setFooter('React with ⏱️ to get the local time.');
+
+            if (data.bannerUrl) {
+                embed.setImage(data.bannerUrl);
+            }
+
             const post = await channel.send('', {
                 embed: embed,
             });

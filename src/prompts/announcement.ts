@@ -337,6 +337,45 @@ export const askRemarksPrompt = new DiscordPrompt(
     askRemarksFn,
 );
 
+// Propaganda GIF
+export const askBannerUrlVisual: VisualGenerator<AnnouncementInterface> = async (
+    data: AnnouncementInterface,
+) => {
+    return new MessageVisual('', {
+        embed: new MessageEmbed({
+            title: `(Optional) GIF:`,
+            description:
+                'Enter an image URL to be used for this OP. Type `none` to disable.',
+        }),
+    });
+};
+
+export const askBannerUrlFn: DiscordPromptFunction<AnnouncementInterface> = async (
+    message: Message,
+    data: AnnouncementInterface,
+) => {
+    const bannerUrl = message.content?.trim();
+
+    if (!bannerUrl) {
+        throw new Rejection(`Invalid image URL. Try again.`);
+    }
+
+    if (bannerUrl.length > 1024) {
+        throw new Rejection(
+            `Remarks must be less than 1024 characters. Try again.`,
+        );
+    }
+
+    return {
+        ...data,
+        bannerUrl: bannerUrl.toLowerCase() === 'none' ? null : bannerUrl,
+    };
+};
+export const askBannerUrlPrompt = new DiscordPrompt(
+    askBannerUrlVisual,
+    askBannerUrlFn,
+);
+
 // Confirm
 export const confirmVisual: VisualGenerator<AnnouncementInterface> = async (
     data: AnnouncementInterface,
@@ -390,9 +429,13 @@ export const confirmVisual: VisualGenerator<AnnouncementInterface> = async (
         .setDescription(data.description)
         .addFields(fields);
 
+    if (data.bannerUrl) {
+        embed.setImage(data.bannerUrl);
+    }
+
     if (data.enablePingEveryone) {
         embed.setFooter(
-            `Bot will ping everyone before this event. (1 hour before mark, 10 minutes before mark, and at the actual start of the event.)`,
+            `Bot will send pings for this event (90 minutes, 30 minutes and at the actual start)`,
         );
     }
     return new MessageVisual(

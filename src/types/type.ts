@@ -6,6 +6,7 @@ export interface AnnouncementInterface {
     title: string;
     when: moment.Moment;
     doctrine?: string | null;
+    bannerUrl?: string | null;
     description: string;
     attending: number;
     notAttending: number;
