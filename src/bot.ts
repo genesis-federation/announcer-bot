@@ -1,9 +1,16 @@
-import { Message, MessageReaction, TextChannel, User } from 'discord.js';
+import {
+    Message,
+    MessageReaction,
+    TextChannel,
+    User,
+    EmbedFieldData,
+    MessageEmbed,
+} from 'discord.js';
 import commando, { CommandoMessage } from 'discord.js-commando';
 import path from 'path';
 import '@/firebase';
 import { AnnouncementsCache } from '@/announcements_cache';
-import { DiscordPromptRunner, PromptNode } from 'discord.js-prompts';
+import { DiscordPromptRunner, MenuEmbed, PromptNode } from 'discord.js-prompts';
 import { askTimezonePrompt } from '@/prompts/timezone';
 import { invoke } from '@/cron';
 
@@ -67,6 +74,125 @@ client.on(
                 )} UTC+${answer.timezone}\` (${converted.fromNow()})`,
             );
             reaction.users.remove(user.id);
+            return;
+        }
+
+        if (reaction.emoji.name === '✅') {
+            const message = reaction.message;
+            await message.fetch();
+
+            if (!message) {
+                return;
+            }
+
+            const embed = message.embeds[0];
+
+            if (!embed) {
+                return;
+            }
+
+            const fields = embed.fields;
+
+            if (!fields) {
+                return;
+            }
+            let attending: EmbedFieldData | undefined;
+
+            attending = embed.fields.find((e) => e.name === 'Attending');
+            let attendees: string[] = [];
+            // create attending embed
+            if (attending) {
+                attendees = (attending.value.replace(/`/g, '') as string)
+                    .split(',')
+                    .map((a) => a.trim());
+            }
+            attendees.push(user.username);
+            attendees = [...new Set(attendees)];
+            const attendeesString = attendees.join(', ');
+            if (attendeesString.length > 1000) {
+                return;
+            }
+
+            const newFields = [
+                ...embed.fields.filter((e) => e.name !== 'Attending'),
+            ];
+            newFields.push({
+                inline: false,
+                value: `\`\`\`${attendeesString}\`\`\``,
+                name: 'Attending',
+            });
+            const newEmbed = new MessageEmbed()
+                .setTitle(embed.title)
+                .setDescription(embed.description)
+                .addFields(newFields)
+                .setFooter('React with ⏱️ to get the local time.');
+            message.edit(newEmbed);
+        }
+    },
+);
+
+client.on(
+    'messageReactionRemove',
+    async (reaction: MessageReaction, user: User) => {
+        if (!AnnouncementsCache.has(reaction.message.id)) {
+            return;
+        }
+        const announcement = AnnouncementsCache.get(reaction.message.id);
+        if (!announcement) {
+            return;
+        }
+
+        if (reaction.emoji.name === '✅') {
+            const message = reaction.message;
+            await message.fetch();
+
+            if (!message) {
+                return;
+            }
+
+            const embed = message.embeds[0];
+
+            if (!embed) {
+                return;
+            }
+
+            const fields = embed.fields;
+
+            if (!fields) {
+                return;
+            }
+
+            let attending: EmbedFieldData | undefined;
+
+            attending = embed.fields.find((e) => e.name === 'Attending');
+            let attendees: string[] = [];
+            // create attending embed
+            if (attending) {
+                attendees = (attending.value.replace(/`/g, '') as string)
+                    .split(',')
+                    .map((a) => a.trim());
+            }
+            attendees = attendees.filter((u) => u !== user.username);
+            attendees = [...new Set(attendees)];
+            const attendeesString = attendees.join(', ');
+            if (attendeesString.length > 1000) {
+                return;
+            }
+
+            const newFields = [
+                ...embed.fields.filter((e) => e.name !== 'Attending'),
+            ];
+            newFields.push({
+                inline: false,
+                value: `\`\`\`${attendeesString}\`\`\``,
+                name: 'Attending',
+            });
+            const newEmbed = new MessageEmbed()
+                .setTitle(embed.title)
+                .setDescription(embed.description)
+                .addFields(newFields)
+                .setFooter('React with ⏱️ to get the local time.');
+            message.edit(newEmbed);
         }
     },
 );
