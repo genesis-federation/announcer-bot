@@ -70,7 +70,7 @@ module.exports = class NewCommand extends Command {
                 name: i.data()?.title,
                 value: `**Date:** ${momentDate.format(
                     'MM/DD/YYY HH:mm',
-                )} UTC (${momentDate.fromNow()})\n**By:**${user}\n**ID:**${
+                )} UTC (${momentDate.fromNow()})\n**By:** ${user}\n**ID:** ${
                     data.messageId
                 }`,
             });
