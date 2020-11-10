@@ -1,5 +1,5 @@
 import { AnnouncementsCache } from '@/announcements_cache';
-import client from '@/bot';
+import { client } from '@/bot';
 import { askTimezonePrompt } from '@/prompts/timezone';
 import {
     EmbedFieldData,
@@ -80,6 +80,9 @@ client.on(
             .setDescription(embed.description)
             .addFields(newFields)
             .setFooter('React with ⏱️ to get the local time.');
+        if (embed.image) {
+            newEmbed.setImage(embed.image.url);
+        }
         message.edit(newEmbed);
     },
 );

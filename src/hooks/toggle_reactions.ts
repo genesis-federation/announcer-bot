@@ -1,5 +1,5 @@
 import { AnnouncementsCache } from '@/announcements_cache';
-import client from '@/bot';
+import { client } from '@/bot';
 import { MessageReaction, User } from 'discord.js';
 
 client.on(

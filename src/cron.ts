@@ -2,11 +2,14 @@ import moment from 'moment';
 import { AnnouncementsCache } from './announcements_cache';
 import { client } from '@/bot';
 import { Settings } from '@/models/settings';
-import { TextChannel } from 'discord.js';
+import { EmbedFieldData, MessageEmbed, TextChannel } from 'discord.js';
 import admin from '@/firebase';
+import path from 'path';
+
+const config = require(path.join(__dirname, 'config.json'));
 
 const announcerCron = async () => {
-    console.log('Cron invoked.');
+    console.log('announcer cron invoked.');
     const setting = await Settings.get();
     const announcementChannelId = setting.data()?.announcementChannelId;
 
@@ -84,7 +87,124 @@ const announcerCron = async () => {
     }
 };
 
+const editAnnouncementTimerCron = async () => {
+    const setting = await Settings.get();
+    const announcementChannelId = setting.data()?.announcementChannelId;
+
+    const now = moment();
+    const guild = client.guilds.cache.get(config.guildId);
+    if (!guild) {
+        console.log(`Failed to retrieve server information.`);
+        return;
+    }
+
+    const channel = guild.channels.cache.get(
+        announcementChannelId,
+    ) as TextChannel;
+
+    if (!channel) {
+        console.log(`Failed to retrieve announcement channel.`);
+        return;
+    }
+
+    for (const announcement of AnnouncementsCache) {
+        const value = announcement[1];
+        const announcementId = value.messageId;
+        if (!announcementId) {
+            continue;
+        }
+
+        const message = await channel.messages.fetch(announcementId);
+        const embed = message.embeds[0];
+
+        const fields: EmbedFieldData[] = [];
+
+        const startsIn: string[] = [];
+        const diff = moment.duration(value.when.diff(now));
+        if (diff.days() > 0) {
+            startsIn.push(`${diff.days()} days`);
+        }
+
+        if (diff.hours() > 0) {
+            startsIn.push(`${diff.hours()} hours`);
+        }
+
+        if (diff.minutes() > 0) {
+            startsIn.push(`${diff.minutes()} mins`);
+        }
+
+        fields.push(
+            {
+                name: 'Operation Type',
+                value: value.type,
+            },
+            {
+                name: 'Date',
+                value: `${value.when.format('MMMM D YYYY, h:mm:ss a')} UTC`,
+            },
+            {
+                name: 'Event Starts In',
+                value: startsIn.join(', '),
+            },
+        );
+        // console.log(value.when.format(''
+
+        if (value.staging) {
+            fields.push({
+                name: 'Staging System',
+                value: value.staging,
+                inline: true,
+            });
+        }
+
+        if (value.fcName) {
+            fields.push({
+                name: 'Fleet Commander',
+                value: value.fcName,
+                inline: true,
+            });
+        }
+
+        if (value.doctrine) {
+            fields.push({
+                name: 'Doctrine Ship(s)',
+                value: value.doctrine,
+                inline: true,
+            });
+        }
+
+        if (value.remarks) {
+            fields.push({
+                name: 'Remarks',
+                value: value.remarks,
+            });
+        }
+        console.log(embed.fields.map((i) => i.name));
+
+        // check if has 'participants'
+        const participantEmbed = embed.fields.find(
+            (i) => i.name === 'Participants',
+        );
+        if (participantEmbed) {
+            fields.push(participantEmbed);
+        }
+
+        const newEmbed = new MessageEmbed()
+            .setTitle(value.title)
+            .setDescription(value.description)
+            .addFields(fields)
+            .setFooter('React with ⏱️ to get the local time.');
+
+        if (value.bannerUrl) {
+            newEmbed.setImage(value.bannerUrl);
+        }
+        await message.edit(newEmbed);
+    }
+};
+
 export const invoke = () => {
     announcerCron();
+    editAnnouncementTimerCron();
     setInterval(announcerCron, 60000);
+    setInterval(editAnnouncementTimerCron, 60000);
 };

@@ -1,5 +1,5 @@
 import { AnnouncementsCache } from '@/announcements_cache';
-import client from '@/bot';
+import { client } from '@/bot';
 import { askTimezonePrompt } from '@/prompts/timezone';
 import { MessageReaction, TextChannel, User } from 'discord.js';
 import { DiscordPromptRunner, PromptNode } from 'discord.js-prompts';

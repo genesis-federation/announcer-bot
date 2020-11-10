@@ -49,7 +49,6 @@ client.on('ready', () => {
     });
 });
 
-export default client;
 import '@/hooks/toggle_reactions';
 import '@/hooks/timer';
 import '@/hooks/participants';

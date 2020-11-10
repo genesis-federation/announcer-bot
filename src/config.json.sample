@@ -2,5 +2,6 @@
     "token": "",
     "ownerId": "",
     "commandChannelId": "",
-    "botStatus": ""
+    "botStatus": "",
+    "guildId": ""
 }
