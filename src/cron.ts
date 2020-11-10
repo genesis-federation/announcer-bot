@@ -22,6 +22,8 @@ const announcerCron = async () => {
 
         if (diffInSeconds <= 0 && !value.announced.actual) {
             value.announced.actual = true;
+            value.announced.first = true;
+            value.announced.second = true;
             admin.firestore().doc(`announcements/${value.messageId}`).update({
                 'announced.actual': true,
                 'announced.first': true,
@@ -43,6 +45,7 @@ const announcerCron = async () => {
         // Announce 30 minutes before
         if (diffInMinutes <= 30 && !value.announced.second) {
             value.announced.second = true;
+            value.announced.first = true;
             admin.firestore().doc(`announcements/${value.messageId}`).update({
                 'announced.second': true,
                 'announced.first': true,
@@ -55,7 +58,7 @@ const announcerCron = async () => {
                 continue;
             }
             channel.send(
-                `@everyone, **${value.title}** is starting in 30 minutes!`,
+                `@everyone, **${value.title}** is starting in ${diffInMinutes} minutes!`,
             );
             continue;
         }
@@ -74,7 +77,7 @@ const announcerCron = async () => {
                 continue;
             }
             channel.send(
-                `@everyone, **${value.title}** is starting in 90 minutes!`,
+                `@everyone, **${value.title}** is starting in ${diffInMinutes} minutes!`,
             );
             continue;
         }
