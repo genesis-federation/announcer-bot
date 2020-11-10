@@ -16,7 +16,7 @@ export const askTitleVisual: VisualGenerator<AnnouncementInterface> = async (
 ) => {
     const embed = new MessageEmbed({
         title: '(Required) Operation title:',
-        description: 'Enter the operation title.',
+        description: 'Enter the operation title. Max **256** characters.',
     });
     return new MessageVisual('', {
         embed: embed,
@@ -30,6 +30,12 @@ export const askTitleFn: DiscordPromptFunction<AnnouncementInterface> = async (
     const title = message.content?.trim();
     if (!title) {
         throw new Rejection(`Invalid operation title. Try again.`);
+    }
+
+    if (title.length > 256) {
+        throw new Rejection(
+            `Title must be less than 256 characters. Try again.`,
+        );
     }
 
     return {
@@ -62,6 +68,12 @@ export const askFcFn: DiscordPromptFunction<AnnouncementInterface> = async (
         throw new Rejection(`Invalid FC name. Try again.`);
     }
 
+    if (fc.length > 1024) {
+        throw new Rejection(
+            `FC name(s) must be less than 1024 characters. Try again.`,
+        );
+    }
+
     return {
         ...data,
         fcName: fc.toLowerCase() === 'none' ? null : fc,
@@ -77,7 +89,7 @@ export const askDescriptionVisual: VisualGenerator<AnnouncementInterface> = asyn
         embed: new MessageEmbed({
             title: `(Required) Operation description:`,
             description:
-                'Enter a detailed description about this op. You can use @mention, @ here and @ everyone.',
+                'Enter a detailed description about this op. You can use @mention, @ here and @ everyone. Max **2048** characters.',
         }),
     });
 };
@@ -89,6 +101,12 @@ export const askDescriptionFn: DiscordPromptFunction<AnnouncementInterface> = as
     const description = message.content?.trim();
     if (!description) {
         throw new Rejection(`Invalid description. Try again.`);
+    }
+
+    if (description.length > 2048) {
+        throw new Rejection(
+            `Description must be less than 2048 characters. Try again.`,
+        );
     }
 
     return {
@@ -123,6 +141,12 @@ export const askDoctrineFn: DiscordPromptFunction<AnnouncementInterface> = async
         throw new Rejection(`Invalid doctrine ship(s). Try again.`);
     }
 
+    if (doctrine.length > 1024) {
+        throw new Rejection(
+            `Doctrine ships length must be less than 1024 characters. Try again.`,
+        );
+    }
+
     return {
         ...data,
         doctrine: doctrine.toLowerCase() === 'none' ? null : doctrine,
@@ -153,6 +177,12 @@ export const askStagingFn: DiscordPromptFunction<AnnouncementInterface> = async 
     const staging = message.content?.trim();
     if (!staging) {
         throw new Rejection(`Invalid doctrine ship(s). Try again.`);
+    }
+
+    if (staging.length > 1024) {
+        throw new Rejection(
+            `Staging system must be less than 1024 characters. Try again.`,
+        );
     }
 
     return {
@@ -269,6 +299,44 @@ export const askPingEveryonePrompt = new DiscordPrompt(
     askPingEveryoneFn,
 );
 
+// Remarks
+export const askRemarksVisual: VisualGenerator<AnnouncementInterface> = async (
+    data: AnnouncementInterface,
+) => {
+    return new MessageVisual('', {
+        embed: new MessageEmbed({
+            title: `(Optional) Remarks:`,
+            description:
+                'Anything you want to add on this announcement. Type `none` to disable. Max **1024** characters.',
+        }),
+    });
+};
+
+export const askRemarksFn: DiscordPromptFunction<AnnouncementInterface> = async (
+    message: Message,
+    data: AnnouncementInterface,
+) => {
+    const remarks = message.content?.trim();
+    if (!remarks) {
+        throw new Rejection(`Invalid doctrine ship(s). Try again.`);
+    }
+
+    if (remarks.length > 1024) {
+        throw new Rejection(
+            `Remarks must be less than 1024 characters. Try again.`,
+        );
+    }
+
+    return {
+        ...data,
+        staging: remarks.toLowerCase() === 'none' ? null : remarks,
+    };
+};
+export const askRemarksPrompt = new DiscordPrompt(
+    askRemarksVisual,
+    askRemarksFn,
+);
+
 // Confirm
 export const confirmVisual: VisualGenerator<AnnouncementInterface> = async (
     data: AnnouncementInterface,
@@ -307,6 +375,13 @@ export const confirmVisual: VisualGenerator<AnnouncementInterface> = async (
             name: 'Doctrine Ship(s)',
             value: data.doctrine,
             inline: true,
+        });
+    }
+
+    if (data.remarks) {
+        fields.push({
+            name: 'Remarks',
+            value: data.remarks,
         });
     }
 

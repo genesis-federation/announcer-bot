@@ -15,6 +15,7 @@ export class Announcement implements AnnouncementInterface {
     notAttending = 0;
     notSure = 0;
     staging = '';
+    remarks = '';
     enablePingEveryone = false;
     announced = {
         first: false,
@@ -53,6 +54,7 @@ export class Announcement implements AnnouncementInterface {
             staging: this.staging,
             enablePingEveryone: this.enablePingEveryone,
             announced: this.announced,
+            remarks: this.remarks,
         });
     }
 

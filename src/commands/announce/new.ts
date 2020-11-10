@@ -18,6 +18,7 @@ import {
     confirmPrompt,
     askDescriptionPrompt,
     askPingEveryonePrompt,
+    askRemarksPrompt,
 } from '@/prompts/announcement';
 import { DiscordPromptRunner, Errors, PromptNode } from 'discord.js-prompts';
 import { AnnouncementInterface } from '@/types/type';
@@ -33,6 +34,7 @@ const askType = new PromptNode(askTypePrompt);
 const askStaging = new PromptNode(askStagingPrompt);
 const askDate = new PromptNode(askDatePrompt);
 const askConfirm = new PromptNode(confirmPrompt);
+const askRemarks = new PromptNode(askRemarksPrompt);
 const askPingEveryone = new PromptNode(askPingEveryonePrompt);
 
 askTitle.addChild(askFc);
@@ -42,7 +44,8 @@ askDescription.addChild(askType);
 askType.addChild(askStaging);
 askStaging.addChild(askDate);
 askDate.addChild(askPingEveryone);
-askPingEveryone.addChild(askConfirm);
+askPingEveryone.addChild(askRemarks);
+askRemarks.addChild(askConfirm);
 
 module.exports = class NewCommand extends Command {
     constructor(client: CommandoClient) {
@@ -119,6 +122,7 @@ module.exports = class NewCommand extends Command {
                 title: '',
                 type: 'CTA',
                 when: moment(),
+                remarks: '',
                 enablePingEveryone: false,
                 announced: {
                     actual: false,

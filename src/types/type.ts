@@ -9,6 +9,7 @@ export interface AnnouncementInterface {
     description: string;
     attending: number;
     notAttending: number;
+    remarks: string;
     notSure: number;
     staging?: string | null;
     type: 'CTA' | 'HD' | 'OTHER';
