@@ -147,11 +147,16 @@ module.exports = class NewCommand extends Command {
                 {
                     name: 'Operation Type',
                     value: data.type,
-                    inline: true,
                 },
                 {
                     name: 'Date',
                     value: `${data.when.format('MMMM D YYYY, h:mm:ss a')} UTC`,
+                },
+                {
+                    name: 'Event Starts In',
+                    value: data.when.format(
+                        'D [day(s)], H [hour(s) and] m [min(s)]',
+                    ),
                 },
             );
 

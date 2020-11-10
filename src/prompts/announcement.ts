@@ -385,11 +385,14 @@ export const confirmVisual: VisualGenerator<AnnouncementInterface> = async (
         {
             name: 'Operation Type',
             value: data.type,
-            inline: true,
         },
         {
             name: 'Date',
             value: `${data.when.format('MMMM D YYYY, h:mm:ss a')} UTC`,
+        },
+        {
+            name: 'Events Starts In',
+            value: '*event timer will be shown on the actual post*',
         },
     );
 
