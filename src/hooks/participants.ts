@@ -6,6 +6,9 @@ import {
     MessageReaction,
     User,
 } from 'discord.js';
+import path from 'path';
+
+const config = require(path.join(__dirname, '../', 'config.json'));
 
 client.on(
     'messageReactionAdd',
@@ -66,17 +69,25 @@ client.on(
                 .map((a) => a.trim());
         }
 
-        client.guilds.cache;
+        const guildUser = client.guilds.cache
+            .get(config.guildId)
+            ?.members.cache.get(user.id);
+        let username: string;
+        if (guildUser) {
+            username = guildUser.displayName;
+        } else {
+            username = user.username;
+        }
 
         if (reaction.emoji.name === '✅') {
-            attendees.push(user.username);
-            mayAttend = mayAttend.filter((n) => n !== user.username);
+            attendees.push(username);
+            mayAttend = mayAttend.filter((n) => n !== username);
         } else if (reaction.emoji.name === '❌') {
-            attendees = attendees.filter((n) => n !== user.username);
-            mayAttend = mayAttend.filter((n) => n !== user.username);
+            attendees = attendees.filter((n) => n !== username);
+            mayAttend = mayAttend.filter((n) => n !== username);
         } else if (reaction.emoji.name === '❔') {
-            mayAttend.push(user.username);
-            attendees = attendees.filter((n) => n !== user.username);
+            mayAttend.push(username);
+            attendees = attendees.filter((n) => n !== username);
         }
 
         // make unique

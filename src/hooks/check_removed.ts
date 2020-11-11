@@ -1,20 +1,20 @@
 import { AnnouncementsCache } from '@/announcements_cache';
 import { client } from '@/bot';
-import { askTimezonePrompt } from '@/prompts/timezone';
 import {
     EmbedFieldData,
     MessageEmbed,
     MessageReaction,
-    TextChannel,
     User,
 } from 'discord.js';
-import { DiscordPromptRunner, PromptNode } from 'discord.js-prompts';
-const askTimezone = new PromptNode(askTimezonePrompt);
+import path from 'path';
+const config = require(path.join(__dirname, '../', 'config.json'));
 
 client.on(
     'messageReactionRemove',
     async (reaction: MessageReaction, user: User) => {
-        if (reaction.emoji.name !== '✅') {
+        const allowedEmojis = ['❔', '✅'];
+
+        if (!allowedEmojis.includes(reaction.emoji.name)) {
             return;
         }
 
@@ -49,22 +49,55 @@ client.on(
             return;
         }
 
-        let attending: EmbedFieldData | undefined;
+        const guildUser = client.guilds.cache
+            .get(config.guildId)
+            ?.members.cache.get(user.id);
 
-        attending = embed.fields.find((e) => e.name === 'Participants');
+        let username: string;
+
+        if (guildUser) {
+            username = guildUser.displayName;
+        } else {
+            username = user.username;
+        }
+
+        let attendingEmbed: EmbedFieldData | undefined;
+        let maybeAttendingEmbed: EmbedFieldData | undefined;
+
+        attendingEmbed = embed.fields.find((e) => e.name === 'Participants');
+        maybeAttendingEmbed = embed.fields.find(
+            (e) => e.name === 'May Participate',
+        );
+
         let attendees: string[] = [];
+        let mayAttend: string[] = [];
+
         // create attending embed
-        if (attending) {
-            attendees = (attending.value.replace(/`/g, '') as string)
+        if (attendingEmbed) {
+            attendees = (attendingEmbed.value.replace(/`/g, '') as string)
                 .split(',')
                 .map((a) => a.trim());
         }
-        attendees = attendees.filter((u) => u !== user.username);
+
+        if (maybeAttendingEmbed) {
+            mayAttend = (maybeAttendingEmbed.value.replace(/`/g, '') as string)
+                .split(',')
+                .map((a) => a.trim());
+        }
+
+        attendees = attendees.filter((u) => u !== username);
+        mayAttend = mayAttend.filter((u) => u !== username);
         attendees = [...new Set(attendees)];
+        mayAttend = [...new Set(mayAttend)];
+
         const attendeesString = attendees.slice(0, 20).join(', ');
+        const mayAttendString = mayAttend.slice(0, 20).join(', ');
 
         const newFields = [
-            ...embed.fields.filter((e) => e.name !== 'Participants'),
+            ...embed.fields.filter(
+                (e) =>
+                    e.name !== 'Participants' && e.name !== 'May Participate',
+            ),
         ];
 
         if (attendeesString.length > 0) {
@@ -75,10 +108,19 @@ client.on(
             });
         }
 
+        if (mayAttendString.length > 0) {
+            newFields.push({
+                inline: false,
+                value: `\`\`\`${mayAttendString}\`\`\``,
+                name: 'May Participate',
+            });
+        }
+
         const newEmbed = new MessageEmbed()
             .setTitle(embed.title)
             .setDescription(embed.description)
             .addFields(newFields);
+
         if (embed.timestamp) {
             newEmbed.setTimestamp(embed.timestamp);
         }
