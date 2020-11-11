@@ -199,7 +199,7 @@ const editAnnouncementTimerCron = async () => {
             .setTitle(value.title)
             .setDescription(value.description)
             .addFields(fields)
-            .setFooter('React with ⏱️ to get the local time.');
+            .setTimestamp(value.when.toDate());
 
         if (value.bannerUrl) {
             newEmbed.setImage(value.bannerUrl);

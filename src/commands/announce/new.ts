@@ -200,7 +200,7 @@ module.exports = class NewCommand extends Command {
                 .setTitle(data.title)
                 .setDescription(data.description)
                 .addFields(fields)
-                .setFooter('React with ⏱️ to get the local time.');
+                .setTimestamp(data.when.toDate());
 
             if (data.bannerUrl) {
                 embed.setImage(data.bannerUrl);
