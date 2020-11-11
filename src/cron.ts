@@ -178,7 +178,6 @@ const editAnnouncementTimerCron = async () => {
                 value: value.remarks,
             });
         }
-        console.log(embed.fields.map((i) => i.name));
 
         // check if has 'participants'
         const participantEmbed = embed.fields.find(
