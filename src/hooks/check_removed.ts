@@ -78,11 +78,15 @@ client.on(
         const newEmbed = new MessageEmbed()
             .setTitle(embed.title)
             .setDescription(embed.description)
-            .addFields(newFields)
-            .setFooter('React with ⏱️ to get the local time.');
+            .addFields(newFields);
+        if (embed.timestamp) {
+            newEmbed.setTimestamp(embed.timestamp);
+        }
+
         if (embed.image) {
             newEmbed.setImage(embed.image.url);
         }
+
         message.edit(newEmbed);
     },
 );

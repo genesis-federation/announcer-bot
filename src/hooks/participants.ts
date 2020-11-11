@@ -66,6 +66,8 @@ client.on(
                 .map((a) => a.trim());
         }
 
+        client.guilds.cache;
+
         if (reaction.emoji.name === '✅') {
             attendees.push(user.username);
             mayAttend = mayAttend.filter((n) => n !== user.username);
@@ -110,8 +112,11 @@ client.on(
         const newEmbed = new MessageEmbed()
             .setTitle(embed.title)
             .setDescription(embed.description)
-            .addFields(newFields)
-            .setFooter('React with ⏱️ to get the local time.');
+            .addFields(newFields);
+
+        if (embed.timestamp) {
+            newEmbed.setTimestamp(embed.timestamp);
+        }
 
         if (embed.image) {
             newEmbed.setImage(embed.image.url);
