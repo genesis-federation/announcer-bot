@@ -142,6 +142,11 @@ module.exports = class NewCommand extends Command {
                 message.channel as TextChannel,
             );
 
+            if (!data.finalize) {
+                message.channel.send('Alright.');
+                return null;
+            }
+
             const fields: EmbedFieldData[] = [];
             fields.push(
                 {
