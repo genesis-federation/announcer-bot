@@ -44,7 +44,7 @@ client.on('ready', () => {
     console.log('Client ready!');
     invoke();
     client.user?.setActivity({
-        type: 'CUSTOM_STATUS',
+        type: 'PLAYING',
         name: config.botStatus,
     });
 });
