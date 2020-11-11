@@ -206,6 +206,7 @@ module.exports = class NewCommand extends Command {
             });
 
             await post.react('✅');
+            await post.react('❔');
             await post.react('❌');
             post.react('⏱️');
 

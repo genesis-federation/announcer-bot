@@ -10,7 +10,7 @@ import {
 client.on(
     'messageReactionAdd',
     async (reaction: MessageReaction, user: User) => {
-        const validReactions = ['✅', '❌'];
+        const validReactions = ['✅', '❌', '❔'];
         if (user.bot) {
             return;
         }
@@ -34,70 +34,88 @@ client.on(
             return;
         }
 
-        if (reaction.emoji.name === '✅' || reaction.emoji.name === '❌') {
-            const message = reaction.message;
-            await message.fetch();
+        const embed = message.embeds[0];
 
-            if (!message) {
-                return;
-            }
-
-            const embed = message.embeds[0];
-
-            if (!embed) {
-                return;
-            }
-
-            const fields = embed.fields;
-
-            if (!fields) {
-                return;
-            }
-            let attendingEmbed: EmbedFieldData | undefined;
-
-            attendingEmbed = embed.fields.find(
-                (e) => e.name === 'Participants',
-            );
-            let attendees: string[] = [];
-            // create attending embed
-            if (attendingEmbed) {
-                attendees = (attendingEmbed.value.replace(/`/g, '') as string)
-                    .split(',')
-                    .map((a) => a.trim());
-            }
-            if (reaction.emoji.name === '✅') {
-                attendees.push(user.username);
-            } else if (reaction.emoji.name === '❌') {
-                attendees = attendees.filter((n) => n !== user.username);
-            }
-
-            // make attendees unique
-            attendees = [...new Set(attendees)];
-            let attendeesString = attendees.slice(0, 20).join(', ');
-
-            // get all fields except "Participants"
-            const newFields = [
-                ...embed.fields.filter((e) => e.name !== 'Participants'),
-            ];
-
-            if (attendeesString) {
-                newFields.push({
-                    inline: false,
-                    value: `\`\`\`${attendeesString}\`\`\``,
-                    name: 'Participants',
-                });
-            }
-
-            const newEmbed = new MessageEmbed()
-                .setTitle(embed.title)
-                .setDescription(embed.description)
-                .addFields(newFields)
-                .setFooter('React with ⏱️ to get the local time.');
-
-            if (embed.image) {
-                newEmbed.setImage(embed.image.url);
-            }
-            message.edit(newEmbed);
+        if (!embed) {
+            return;
         }
+
+        const fields = embed.fields;
+
+        if (!fields) {
+            return;
+        }
+        let attendingEmbed: EmbedFieldData | undefined;
+        let mayAttendEmbed: EmbedFieldData | undefined;
+
+        attendingEmbed = embed.fields.find((e) => e.name === 'Participants');
+        mayAttendEmbed = embed.fields.find((e) => e.name === 'May Participate');
+
+        let attendees: string[] = [];
+        let mayAttend: string[] = [];
+
+        if (attendingEmbed) {
+            attendees = (attendingEmbed.value.replace(/`/g, '') as string)
+                .split(',')
+                .map((a) => a.trim());
+        }
+
+        if (mayAttendEmbed) {
+            mayAttend = (mayAttendEmbed.value.replace(/`/g, '') as string)
+                .split(',')
+                .map((a) => a.trim());
+        }
+
+        if (reaction.emoji.name === '✅') {
+            attendees.push(user.username);
+            mayAttend = mayAttend.filter((n) => n !== user.username);
+        } else if (reaction.emoji.name === '❌') {
+            attendees = attendees.filter((n) => n !== user.username);
+            mayAttend = mayAttend.filter((n) => n !== user.username);
+        } else if (reaction.emoji.name === '❔') {
+            mayAttend.push(user.username);
+            attendees = attendees.filter((n) => n !== user.username);
+        }
+
+        // make unique
+        attendees = [...new Set(attendees)];
+        mayAttend = [...new Set(mayAttend)];
+        let attendeesString = attendees.slice(0, 20).join(', ');
+        let mayAttendString = mayAttend.slice(0, 20).join(', ');
+
+        // get all fields except "Participants"
+        const newFields = [
+            ...embed.fields.filter(
+                (e) =>
+                    e.name !== 'Participants' && e.name !== 'May Participate',
+            ),
+        ];
+
+        if (attendeesString && attendees.length > 0) {
+            newFields.push({
+                inline: false,
+                value: `\`\`\`${attendeesString}\`\`\``,
+                name: 'Participants',
+            });
+        }
+
+        if (mayAttendString && mayAttend.length > 0) {
+            newFields.push({
+                inline: false,
+                value: `\`\`\`${mayAttendString}\`\`\``,
+                name: 'May Participate',
+            });
+        }
+
+        const newEmbed = new MessageEmbed()
+            .setTitle(embed.title)
+            .setDescription(embed.description)
+            .addFields(newFields)
+            .setFooter('React with ⏱️ to get the local time.');
+
+        if (embed.image) {
+            newEmbed.setImage(embed.image.url);
+        }
+        message.edit(newEmbed);
     },
 );

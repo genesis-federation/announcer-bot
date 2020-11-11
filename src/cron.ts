@@ -147,7 +147,6 @@ const editAnnouncementTimerCron = async () => {
                 value: startsIn.join(', '),
             },
         );
-        // console.log(value.when.format(''
 
         if (value.staging) {
             fields.push({
@@ -187,6 +186,14 @@ const editAnnouncementTimerCron = async () => {
         );
         if (participantEmbed) {
             fields.push(participantEmbed);
+        }
+
+        // check if has 'may participate'
+        const mayParticipateEmbed = embed.fields.find(
+            (i) => i.name === 'May Participate',
+        );
+        if (mayParticipateEmbed) {
+            fields.push(mayParticipateEmbed);
         }
 
         const newEmbed = new MessageEmbed()
