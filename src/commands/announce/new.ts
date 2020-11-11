@@ -201,7 +201,7 @@ module.exports = class NewCommand extends Command {
                 embed.setImage(data.bannerUrl);
             }
 
-            const post = await channel.send('', {
+            const post = await channel.send('@everyone', {
                 embed: embed,
             });
 

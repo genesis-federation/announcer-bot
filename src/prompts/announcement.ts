@@ -283,7 +283,12 @@ export const askPingEveryoneFn: DiscordPromptFunction<AnnouncementInterface> = a
     message: Message,
     data: AnnouncementInterface,
 ) => {
-    const ping = message.content?.trim();
+    const ping = message.content?.trim().toLowerCase();
+    const choices = ['yes', 'no'];
+    if (!choices.includes(ping)) {
+        throw new Rejection(`Please choose between \`yes\` and \`no\`.`);
+    }
+
     let pingEveryone = false;
     if (ping.toLowerCase() === 'yes') {
         pingEveryone = true;
@@ -318,7 +323,7 @@ export const askRemarksFn: DiscordPromptFunction<AnnouncementInterface> = async 
 ) => {
     const remarks = message.content?.trim();
     if (!remarks) {
-        throw new Rejection(`Invalid doctrine ship(s). Try again.`);
+        throw new Rejection(`Invalid remarks. Try again.`);
     }
 
     if (remarks.length > 1024) {
