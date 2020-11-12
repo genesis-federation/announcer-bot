@@ -117,8 +117,9 @@ const editAnnouncementTimerCron = async () => {
 
         const fields: EmbedFieldData[] = [];
         // const originalAnnoucement = value.when.clone();
+        const whenClone = value.when.clone();
         const startsIn: string[] = [];
-        const diff = moment.duration(value.when.diff(now));
+        const diff = moment.duration(whenClone.diff(now));
         if (diff.days() > 0) {
             startsIn.push(`${diff.days()} days`);
         }

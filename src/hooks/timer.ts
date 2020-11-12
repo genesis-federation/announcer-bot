@@ -37,7 +37,7 @@ client.on(
             (channel as unknown) as TextChannel,
         );
 
-        const converted = announcement.when.utcOffset(answer.timezone);
+        const converted = announcement.when.clone().utcOffset(answer.timezone);
 
         channel.send(
             `**${announcement.title}** will be on: \`${converted.format(
