@@ -39,9 +39,7 @@ const announcerCron = async () => {
             if (!channel) {
                 continue;
             }
-            channel.send(
-                `@everyone, **${value.title}** is starting NOW. Get on fucking comms!`,
-            );
+            channel.send(`@everyone, **${value.title}** is starting NOW!`);
             continue;
         }
 
