@@ -23,7 +23,7 @@ client.on(
         if (!announcement) {
             return;
         }
-
+        reaction.users.remove(user.id);
         const runner = new DiscordPromptRunner<{ timezone: number }>(user, {
             timezone: 0,
         });
@@ -44,7 +44,7 @@ client.on(
                 'MM/DD/YYYY HH:mm',
             )} UTC+${answer.timezone}\` (${converted.fromNow()})`,
         );
-        reaction.users.remove(user.id);
+
         return;
     },
 );
