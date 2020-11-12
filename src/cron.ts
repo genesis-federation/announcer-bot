@@ -9,7 +9,6 @@ import path from 'path';
 const config = require(path.join(__dirname, 'config.json'));
 
 const announcerCron = async () => {
-    console.log('announcer cron invoked.');
     const setting = await Settings.get();
     const announcementChannelId = setting.data()?.announcementChannelId;
 
@@ -86,10 +85,10 @@ const announcerCron = async () => {
 };
 
 const editAnnouncementTimerCron = async () => {
+    console.log('announcer cron invoked.');
     const setting = await Settings.get();
     const announcementChannelId = setting.data()?.announcementChannelId;
 
-    const now = moment();
     const guild = client.guilds.cache.get(config.guildId);
     if (!guild) {
         console.log(`Failed to retrieve server information.`);
@@ -106,6 +105,7 @@ const editAnnouncementTimerCron = async () => {
     }
 
     for (const announcement of AnnouncementsCache) {
+        const now = moment();
         const value = announcement[1];
         const announcementId = value.messageId;
         if (!announcementId) {
@@ -116,7 +116,7 @@ const editAnnouncementTimerCron = async () => {
         const embed = message.embeds[0];
 
         const fields: EmbedFieldData[] = [];
-
+        // const originalAnnoucement = value.when.clone();
         const startsIn: string[] = [];
         const diff = moment.duration(value.when.diff(now));
         if (diff.days() > 0) {
