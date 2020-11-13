@@ -54,3 +54,4 @@ import '@/hooks/timer';
 import '@/hooks/participants';
 import '@/hooks/check_removed';
 import '@/hooks/announcement_deleted';
+import '@/hooks/response';
