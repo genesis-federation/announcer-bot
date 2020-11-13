@@ -112,7 +112,16 @@ const editAnnouncementTimerCron = async () => {
             continue;
         }
 
-        const message = await channel.messages.fetch(announcementId);
+        let message;
+        try {
+            message = await channel.messages.fetch(announcementId);
+            if (!message) {
+                continue;
+            }
+        } catch (error) {
+            continue;
+        }
+
         const embed = message.embeds[0];
 
         const fields: EmbedFieldData[] = [];
