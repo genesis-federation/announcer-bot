@@ -37,7 +37,9 @@ export class Announcement implements AnnouncementInterface {
         });
     }
 
-    fill(announcementId: string) {}
+    static deleteById(id: string) {
+        return firebase.firestore().doc(`announcements/${id}`).delete();
+    }
 
     save() {
         return firebase.firestore().doc(`announcements/${this.messageId}`).set({
