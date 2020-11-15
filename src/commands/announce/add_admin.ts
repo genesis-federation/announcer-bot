@@ -53,7 +53,9 @@ module.exports = class NewCommand extends Command {
     ): Promise<Message | Message[] | null> {
         const userId = args.userId;
 
-        const user = message.guild.members.cache.get(userId);
+        const user =
+            message.guild.members.cache.get(userId) ||
+            this.client.users.fetch(userId);
 
         if (!user) {
             return message.channel.send(
