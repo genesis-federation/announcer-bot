@@ -55,7 +55,7 @@ module.exports = class NewCommand extends Command {
 
         const user =
             message.guild.members.cache.get(userId) ||
-            this.client.users.fetch(userId);
+            (await this.client.users.fetch(userId));
 
         if (!user) {
             return message.channel.send(
