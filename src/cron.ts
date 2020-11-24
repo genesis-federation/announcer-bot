@@ -148,7 +148,7 @@ const editAnnouncementTimerCron = async () => {
             },
             {
                 name: 'Date',
-                value: `${value.when.format('MMMM D YYYY, h:mm:ss a')} UTC`,
+                value: `${value.when.format('MMMM D YYYY, HH:mm:ss')} UTC`,
             },
             {
                 name: 'Event Starts In',
